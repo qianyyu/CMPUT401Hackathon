@@ -1,6 +1,6 @@
+
 let total = {};
 let death = {};
-
 function drop_down_onchange() {
     let country = document.getElementById("country_selection").value;
     console.log(country);
@@ -82,11 +82,51 @@ function fetch_data_by_country(country) {
     });
 }
 
-function fetch_data_by_country_date(country, dates) {
+// function fetch_data_by_country_date(country, dates) {
+//     console.log(country, dates);
+//     plot(total, death);
+//     for (date of dates) {
+//         fetch(
+//             "https://covid-193.p.rapidapi.com/history?country=" +
+//             country +
+//             "&day=" +
+//             date,
+//             {
+//                 method: "GET",
+//                 redirect: "follow",
+//                 headers: {
+//                     "x-rapidapi-key":
+//                         "1e2f4f94dbmsh9fc0dcd6b9a82fap1516edjsn402832e9ca33",
+//                     "x-rapidapi-host": "covid-193.p.rapidapi.com",
+//                 },
+//             }
+//         ).then((response) => {
+//             response.json().then((data) => {
+//                 console.log(date)
+//                 try {
+//                     total[date] = data["response"][0]["cases"]["new"];
+//                 } catch {
+//                     total[date] = 0;
+//                 }
+//                 try {
+//                     death[date] = data["response"][0]["deaths"]["new"];
+//                 } catch {
+//                     death[date] = 0;
+//                 }
+//                 // console.log(Object.keys(total).length)    
+//                 // if(Object.keys(total).length == 9){
+//                 //     plot(total, death);
+//                 // }
+//             });
+//         });
+//     };
+// }
+
+async function fetch_data_by_country_date(country, dates) {
     console.log(country, dates);
-    total = {};
-    const fetch1 = async (country, date) => {
-        await fetch(
+    plot(total, death);
+    for (date of dates){
+        let response = await fetch(
             "https://covid-193.p.rapidapi.com/history?country=" +
             country +
             "&day=" +
@@ -100,31 +140,25 @@ function fetch_data_by_country_date(country, dates) {
                     "x-rapidapi-host": "covid-193.p.rapidapi.com",
                 },
             }
-        ).then((response) => {
-            response.json().then((data) => {
-                console.log(data);
-                try{
-                    total[date] = data["response"][0]["cases"]["new"];
-                } catch {
-                    total[date] = 0;
-                }
-                try{
-                    death[date] = data["response"][0]["deaths"]["new"];
-                } catch {
-                    death[date] = 0;
-                }                 
-                
-                plot();
-            });
-        });
+        )
+
+        let data = await response.json()
+        console.log(date);
+        try {
+            total[date] = data["response"][0]["cases"]["new"];
+        } catch {
+            total[date] = 0;
+        }
+        try {
+            death[date] = data["response"][0]["deaths"]["new"];
+        } catch {
+            death[date] = 0;
+        }
+        plot(total, death);
     };
-    dates.forEach((date) => {
-        fetch1(country, date);
-        console.log(total);
-    });
 }
 
-function plot() {
+function plot(total, death) {
     let my_chart;
     const ctx = document.getElementById("myChart").getContext("2d");
     if (my_chart) {
