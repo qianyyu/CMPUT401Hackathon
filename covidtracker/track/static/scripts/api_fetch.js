@@ -1,6 +1,7 @@
 
 let total = {};
 let death = {};
+let my_chart;
 
 function sortObj(obj) {
     return Object.keys(obj).sort().reduce(function (result, key) {
@@ -92,7 +93,6 @@ function fetch_data_by_country(country) {
 
 function fetch_data_by_country_date(country, dates) {
     // console.log(country, dates);
-    plot(total, death);
     for (date of dates) {
         fetch(
             "https://covid-193.p.rapidapi.com/history?country=" +
@@ -122,7 +122,7 @@ function fetch_data_by_country_date(country, dates) {
                     console.log(data)
                     death[data["parameters"]["day"]] = 0;
                 }
-                if (Object.keys(total).length == 9) {
+                if (Object.keys(total).length == 9 && Object.keys(death).length == 9) {
                     plot(sortObj(total), sortObj(death));
                 }
             });
@@ -167,9 +167,11 @@ function fetch_data_by_country_date(country, dates) {
 // }
 
 function plot(total, death) {
-    let my_chart;
+    
     const ctx = document.getElementById("myChart").getContext("2d");
+    console.log(my_chart)
     if (my_chart) {
+        console.log('destoryed')
         my_chart.destroy();
     }
     // console.log(Object.keys(total));
